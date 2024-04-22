@@ -14,10 +14,6 @@ passwords in the correct order (descending).
 
 ### Installation
 
-Use a recent Linux version make sure you have installed `git` (Git version control system), `gcc` (GNU Compiler Collection), and `make` (GNU Make). You can install it under Ubuntu Linux via:
-
-`$ sudo apt-get install build-essential git`
-
 Check out the source code via:
 
 `$ git clone https://github.com/RUB-SysSec/OMEN.git OMEN`
@@ -46,10 +42,6 @@ If compilation is successful, you can find `createNG` and `enumNG` within the cu
 ```
 
 If you like, you can now remove the `src` folder and the `makefile` file, they are no longer used.
-
-#### Windows User?
-
-A short installation guide using Cygwin on Windows 10 can be found [here](https://www.password-guessing.org/blog/post/omen-on-windows-using-cygwin/).
 
 ### Basic Usage
 
@@ -95,66 +87,6 @@ If you are interested in evaluating the guessing performance against a *plaintex
 The result of this evaluation can be found in the '*results*' folder.
 
 Both modules provide a help dialog which can be shown using the `-h` or `--help` argument.
-
-### Password Cracking
-
-How to get from `$2a$10$HNYF4KajSTqxIP/KoiB5tOCVeKUgvscTh32hhAmppFk4T/USmI2B.` to `"GoodOMEN!123"`?
-
-#### Ethics
-OMEN was developed for [academic use cases](https://password-guessing.org) like [improving probabilistic password modeling](https://hal.archives-ouvertes.fr/hal-01112124/file/omen.pdf), [estimating guess numbers](https://github.com/RUB-SysSec/Password-Guessing-Framework) or [password strength](https://www.internetsociety.org/sites/default/files/06_3.pdf), in general, to improve password security. Do not abuse this software to harm other people's privacy or to break the law.
-
-#### Preimage Attacks
-Popular hash evaluators like [Hashcat](https://github.com/hashcat/hashcat) and [John the Ripper](https://github.com/magnumripper/JohnTheRipper) support hundreds of
-hash and cipher formats and could be easily integrated due to their support to
-read password candidates via their standard input (stdin) stream.
-
-`$ ./enumNG -p -m 10000 | ./hashcat64.bin  ...`
-
-or
-
-`$ ./enumNG -p -m 10000 | ./john --stdin ...`
-
-For optimal guessing performance, consider to train `createNG` with a password distribution that is similar to the one you like to crack.
-
-Please note: Using probabilistic password modeling to crack passwords, in general, should only be considered against slow hashes (e.g., [bcrypt](https://en.wikipedia.org/wiki/Bcrypt), [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2), [scrypt](https://en.wikipedia.org/wiki/Scrypt), or [Argon2](https://en.wikipedia.org/wiki/Argon2)) were the number of feasible guesses is limited or in very targeted attacks. In contrast, for very fast hashes ([MD5](https://en.wikipedia.org/wiki/MD5), [SHA-1](https://en.wikipedia.org/wiki/SHA-1), or [NTLM](https://en.wikipedia.org/wiki/NT_LAN_Manager)), using [good dictionaries](https://weakpass.com) and mangling rules (e.g., best64.rule) are the way to go.
-
-If you are interested in this topic, consider to read the following papers and their related work (this list is incomplete, you can help by expanding it):
-
-**Probabilistic Context-Free Grammars**
-* Password Cracking Using Probabilistic Context-Free Grammars (SP '09)
-* Guess Again (and Again and Again): Measuring Password Strength by Simulating Password-Cracking Algorithms (SP '12)
-* On the Semantic Patterns of Passwords and their Security Impact (NDSS '14)
-* Next Gen PCFG Password Cracking (TIFS '15)
-* ...
-* [Software A](https://github.com/lakiw/pcfg_cracker), [Software B](https://sites.google.com/site/reusablesec/Home/password-cracking-tools/probablistic_cracker)
-
-**Markov Models**
-* Fast Dictionary Attacks on Passwords Using Time-Space Tradeoff (CCS '05)
-* OMEN+: When Privacy meets Security: Leveraging personal information for password cracking (CoRR '13)
-* A Study of Probabilistic Password Models (SP '14)
-* OMEN: Faster Password Guessing Using an Ordered Markov Enumerator (ESSoS '15)
-* ...
-* [Software A](http://openwall.info/wiki/john/markov), [Software B](https://github.com/RUB-SysSec/OMEN)
-
-**Neural Networks**
-* Fast, Lean, and Accurate: Modeling Password Guessability Using Neural Networks (USENIX '16)
-* Using Neural Networks for Password Cracking (Blog post by Sebastian Neef '16)
-* Design and Evaluation of a Data-Driven Password Meter (CHI '17)
-* ...
-* [Software A](https://github.com/gehaxelt/RNN-Passwords), [Software B](https://github.com/cupslab/neural_network_cracking)
-
-**Hybrids**
-* John the Ripper '*Incremental*' Mode
-* Introducing the PRINCE Attack-Mode (PASSWORDS '14)
-* ...
-* [Software A](http://www.openwall.com/john/doc/MODES.shtml), [Software B](https://github.com/hashcat/princeprocessor)
-
-**Approach Comparison**
-* Measuring Real-World Accuracies and Biases in Modeling Password Guessability (USENIX '15)
-* A Framework for Comparing Password Guessing Strategies (PASSWORDS '15)
-* PARS: A Uniform and Open-source Password Analysis and Research System (ACSAC '15)
-* ...
-* [Software A](https://password-guessing.org), [Software B](https://pgs.ece.cmu.edu)
 
 ### Advanced Usage
 
@@ -203,105 +135,8 @@ Performance
 -----------
 ![OMEN](/docs/screenshots/performance.png?raw=true "OMEN")
 
-
-
-Smoothing Configuration
------------------------
-
-The smoothing function is selected and configured using a configuration file (`createConfig`).
-The file must contain the name of the smoothing function and may contain the
-values for any variable parameters. The file should be formatted like this:
-
-```
-<name>
--<parameter>_<target> <value>
-...
-```
-
-At this time, the only supported smoothing functions are **none** or **additive** smoothing.
-
-The allowed parameters (`<parameter>`) are:
-* **levelAdjust** (level adjustment factor, heavily influence performance, i.e., good are 100-250)
-* **delta** (additive smoothing adds a value δ (delta) to each n-gram, i.e., 0,1,2, ...)
-
-The allowed targets (`<target>`) are:
-* **IP** (Initial Probability)
-* **CP** (Conditional Probability)
-* **EP** (End Probability)
-* **all** (Parameter is used for all possible targets)
-
-Notice, one value for a single target overwrites the one set for all.
-
-An exemplary for the **add1(250)** (Additive Smoothing (δ=1), Level Adjustment Factor of 250) smoothing setting:
-```
-additive
--delta_all 1
--delta_LN 0
--levelAdjust_all 250
--levelAdjust_CP 2
--levelAdjust_LN 1
-```
-
-Additional Program Modules
---------------------------
-
-Besides the two main modules `createNG` and `enumNG`, OMEN provides two other
-program modules: `evalPW` and `alphabetCreator`. `evalPW` evaluates a given
-password and `alphabetCreator` creates an alphabet with the most frequent
-character in a given password list. Both modules should be considered experimental.
-
-#### evalPW
-
-It reads a given password and evaluates its strength by returning a password-level. The result is based on the levels generated by `createNG`. The password-level is the sum of each
-occurring n-gram level, based on the level lists IP, CP, and EP. The current
-implementation of `evalPW` is only a prototype and does not support the whole
-possible functionality and contains **lots of bugs**. For example, the actual password length does not influence the password-level. Therefore, only passwords with the same length can
-be compared to each other.
-
-`$ ./evalPW --pw=demo123`
-
-#### alphabetCreator
-
-If you want to limit OMEN to passwords complying to a given alphabet you can specify this in the configuration file (`createConfig`). To determine the most promising alphabet, the `alphabetCreator` might be able to help you. The program module creates a new alphabet based on a given password list. The **characters of the new alphabet are ordered by their frequency in the password list**, beginning with the highest frequency. The length of the alphabet is variable. The created alphabet is based on the 8-bit ASCII table
-according to ISO 8859-1 (not allowing ’\n’, ’\r’, ’\t’, and ’ ’ (space)).
-Characters that are not part of this table are ignored. Also, an existing
-alphabet may be extended with the most frequent characters.
-
-```
-# Based on the frequency statistics of the training file (password-training-list.txt), we generate the new alphabet (new-alphabet-file.alphabet)
-$ ./alphabetCreator --pwList password-training-list.txt --size 95 --output new-alphabet-file
-
-# Optional: Verification
-$ cat new-alphabet-file.alphabet
-ae1ionrls20tm39c8dy54hu6b7kgpjvfwzAxEIOLRNSTMqCDB.YH!U_PKGJ-*VF@WZ#/X$,&+Q?\)=(';%<]~[:^`">{}|
-
-# Now you can train OMEN using the newly generated alphabet
-$ ./createNG --iPwdList password-training-list.txt -A new-alphabet-file.alphabet -v
-
-# Optional: Verification
-$ ./enumNG -p -m 1000 > top1k.txt
-$ grep password top1k.txt
-password
-```
-
 FAQ
 ---
 
 * Very poor performance and strange looking passwords?
 Make sure you generated the alphabet file with the `alphabetCreator`. Manually generating the alphabet is not supported (see [Issue#4](https://github.com/RUB-SysSec/OMEN/issues/4)).
-
-License
--------
-
-The **Ordered Markov ENumerator (OMEN)** is licensed under the MIT license. Refer to [docs/LICENSE](docs/LICENSE) for more information.
-
-### Third-Party Libraries
-* **getopt** is part of the GNU C Library (glibc) and used to parse command
-line arguments. The developer, the license, and the source code can be downloaded
-[here](http://www.gnu.org/software/libc/).
-* **uthash** is a hash table for C structures developed by Troy D. Hanson. The
-source code and the license can be downloaded [here](http://troydhanson.github.com/uthash/).
-
-Contact
--------
-Visit our [website](https://www.mobsec.rub.de) and follow us on [Twitter](https://twitter.com/hgi_bochum). If you are interested in passwords, consider to contribute and to attend the [International Conference on Passwords (PASSWORDS)](https://passwordscon.org).
